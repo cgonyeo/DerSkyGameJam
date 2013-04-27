@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanA", "PlanA\PlanA\PlanA.csproj", "{57377377-2AA6-4093-9F88-49B36C9ECF9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanAContent", "PlanA\PlanAContent\PlanAContent.contentproj", "{D5984AC8-9A2A-4D69-8B86-0504C92BB8FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanB", "PlanB\PlanB.csproj", "{C79E0E77-DD12-4082-9495-71F8625602ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57377377-2AA6-4093-9F88-49B36C9ECF9E}.Debug|x86.ActiveCfg = Debug|x86
+		{57377377-2AA6-4093-9F88-49B36C9ECF9E}.Debug|x86.Build.0 = Debug|x86
+		{57377377-2AA6-4093-9F88-49B36C9ECF9E}.Release|x86.ActiveCfg = Release|x86
+		{57377377-2AA6-4093-9F88-49B36C9ECF9E}.Release|x86.Build.0 = Release|x86
+		{D5984AC8-9A2A-4D69-8B86-0504C92BB8FA}.Debug|x86.ActiveCfg = Debug|x86
+		{D5984AC8-9A2A-4D69-8B86-0504C92BB8FA}.Release|x86.ActiveCfg = Release|x86
+		{C79E0E77-DD12-4082-9495-71F8625602ED}.Debug|x86.ActiveCfg = Debug|x86
+		{C79E0E77-DD12-4082-9495-71F8625602ED}.Debug|x86.Build.0 = Debug|x86
+		{C79E0E77-DD12-4082-9495-71F8625602ED}.Release|x86.ActiveCfg = Release|x86
+		{C79E0E77-DD12-4082-9495-71F8625602ED}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
