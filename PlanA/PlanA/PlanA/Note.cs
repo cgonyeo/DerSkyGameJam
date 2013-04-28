@@ -12,8 +12,8 @@ namespace PlanA
     /// </summary>
     public class Note
     {
-        //buffer, in milliseconds on 
-        public const int TIMEBUFFER = 100;
+        //buffer, in milliseconds on; 1 second = 100
+        public const int TIMEBUFFER = 25;
         //enumeration that represents which button to associate with this note
         public enum BUTTONS {GREEEN = 0, RED = 1, YELLOW = 2, BLUE = 3, ORANGE = 4};
 
@@ -43,7 +43,7 @@ namespace PlanA
         public bool isHitConfirmed(int currentTime)
         {
             //first check for timing on either end of the buffer
-            if(((this.timeStart + TIMEBUFFER) >= currentTime) || ((this.timeStart - TIMEBUFFER) <= currentTime))
+            if(((this.timeStart + TIMEBUFFER) >= currentTime) && ((this.timeStart - TIMEBUFFER) <= currentTime))
             {
                 //if the button/chord is held down
                 if ((GamePad.GetState(PlayerIndex.One).IsButtonDown(this.padButtons[(int)button])) || (Keyboard.GetState().IsKeyDown(this.keyButtons[(int)button])))

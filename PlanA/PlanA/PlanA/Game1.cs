@@ -68,12 +68,13 @@ namespace PlanA
         {
             //please add the notes in order 
             //remember that all time is done in MILLISECONDS
-            this.noteList.Add(new Note(1000,Note.BUTTONS.GREEEN));
-            this.noteList.Add(new Note(2000, Note.BUTTONS.RED));
-            this.noteList.Add(new Note(3000, Note.BUTTONS.YELLOW));
-            this.noteList.Add(new Note(4000, Note.BUTTONS.BLUE));
-            this.noteList.Add(new Note(5000, Note.BUTTONS.ORANGE));
-            this.noteList.Add(new Note(6000, Note.BUTTONS.GREEEN));
+            //so 100 = 1 second
+            this.noteList.Add(new Note(100,Note.BUTTONS.GREEEN));
+            this.noteList.Add(new Note(200, Note.BUTTONS.RED));
+            this.noteList.Add(new Note(300, Note.BUTTONS.YELLOW));
+            this.noteList.Add(new Note(400, Note.BUTTONS.BLUE));
+            this.noteList.Add(new Note(500, Note.BUTTONS.ORANGE));
+            this.noteList.Add(new Note(600, Note.BUTTONS.GREEEN));
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace PlanA
             {
                 //High Charity has fallen! Wort wort wort!
                 //Console.WriteLine("Sacred Index: "+sacredIndex);
-                //this.noteList.RemoveAt(sacredIndex);
+                this.noteList.RemoveAt(sacredIndex);
             }
             //Console.WriteLine(this.Timer.MilliSeconds);
         }
@@ -163,8 +164,6 @@ namespace PlanA
             }
             //intial volume is the volume value of the first sound file
             this.GuitarVolume = this.SoundHandlerInst[0].Volume;
-            //the very last thing to do is to start the timer...we may want to do this later
-            this.Timer.Start();
         }
 
         /// <summary>
@@ -183,6 +182,9 @@ namespace PlanA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //start the timer once, ver first thing once the looping begins
+            if(this.Timer.IsTiming == false)
+                this.Timer.Start();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();

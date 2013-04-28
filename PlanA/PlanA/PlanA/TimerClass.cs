@@ -26,6 +26,7 @@ namespace PlanA
         //two time stamp variables...for use eventually; use time stamp method to actually give it a value
         public float TimeStamp1 { get; set; }
         public float TimeStamp2 { get; set; }
+        public Boolean IsTiming { get; set; }
 
         //added for this app
         //public List<GuitarButtonClass> ListOfBtn;
@@ -44,6 +45,7 @@ namespace PlanA
             //fortunately the Milliseconds is =0 right now
             SetTimeStamp1();
             SetTimeStamp2();
+            this.IsTiming = false;
             MyTimer.Elapsed += new ElapsedEventHandler(IncrementEvent);
         }
         public TimerClass(float IncrementArg)
@@ -58,6 +60,7 @@ namespace PlanA
             //fortunately the Milliseconds is =0 right now
             SetTimeStamp1();
             SetTimeStamp2();
+            this.IsTiming = false;
             MyTimer.Elapsed += new ElapsedEventHandler(IncrementEvent);
             //OldState = !DetectConnection();
         }
@@ -66,16 +69,19 @@ namespace PlanA
         {
             //starts the event
             //MyTimer.Elapsed+=new ElapsedEventHandler(IncrementEvent);
+            this.IsTiming = true;
             MyTimer.Start();
         }
         public void Stop()
         {
+            this.IsTiming = false;
             MyTimer.Stop();
         }
         //reset actually sets time back to 0
         public void Reset()
         {
             //calls the stop method
+            this.IsTiming = false;
             Stop();
             //time actually reset to 0
             Seconds = 0;
