@@ -30,6 +30,14 @@ namespace PlanA
         public float GuitarVolume;
         //points!
         public int score;
+        //Multiplier and star power shit
+        public const int SCOREMULTIPLIER = 2;
+        //how many notes in a row to hit until star power?
+        public const int CHARGEDSTARPOWER = 10;
+        //charge star power
+        public int starPowerScore;
+        //font to draw shit to the screen
+        public SpriteFont font;
 
         public Game1()
         {
@@ -61,10 +69,10 @@ namespace PlanA
             //please add the notes in order 
             //remember that all time is done in MILLISECONDS
             this.noteList.Add(new Note(1000,Note.BUTTONS.GREEEN));
-            this.noteList.Add(new Note(2000, Note.BUTTONS.GREEEN));
-            this.noteList.Add(new Note(3000, Note.BUTTONS.GREEEN));
-            this.noteList.Add(new Note(4000, Note.BUTTONS.GREEEN));
-            this.noteList.Add(new Note(5000, Note.BUTTONS.GREEEN));
+            this.noteList.Add(new Note(2000, Note.BUTTONS.RED));
+            this.noteList.Add(new Note(3000, Note.BUTTONS.YELLOW));
+            this.noteList.Add(new Note(4000, Note.BUTTONS.BLUE));
+            this.noteList.Add(new Note(5000, Note.BUTTONS.ORANGE));
             this.noteList.Add(new Note(6000, Note.BUTTONS.GREEEN));
         }
 
@@ -82,17 +90,25 @@ namespace PlanA
                     //play the mapped sound
                     this.SoundHandlerInst[(int)this.noteList[cntr].button].Play();
                     this.score += this.noteList[cntr].points;
-                    //tag to remove
                     indexes.Add(cntr);
                 }
+                //tag to remove once time has passed by
+                else if ((this.noteList[cntr].timeStart + Note.TIMEBUFFER) < (int)this.Timer.MilliSeconds)
+                {
+                    indexes.Add(cntr);
+                }
+                //indexes.Add(cntr);
+                //Console.WriteLine(cntr);
             }
             //at the end of checking, remove any used Notes, shorten the shit
             //and prevent duplicate sounds from playing because OH GOD OH GOD
             foreach (int sacredIndex in indexes)
             {
                 //High Charity has fallen! Wort wort wort!
-                this.noteList.RemoveAt(sacredIndex);
+                //Console.WriteLine("Sacred Index: "+sacredIndex);
+                //this.noteList.RemoveAt(sacredIndex);
             }
+            //Console.WriteLine(this.Timer.MilliSeconds);
         }
         public void whammyBar()
         {
@@ -121,6 +137,8 @@ namespace PlanA
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            //load that font!
+            this.font = Content.Load<SpriteFont>("SpriteFont1"); //Lucida Console
             //my stuff to handle sound and timing; set to trigger every millisecond
             //this may be a bad idea and we may need to reduce percision later
             Timer = new TimerClass(1f);
@@ -183,9 +201,19 @@ namespace PlanA
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            //draw the time to the screen
+            //this took me longer than it should have
+            String timeStr = ((((int)this.Timer.MilliSeconds) / 100) / 60) + ":" + ((((int)this.Timer.MilliSeconds) / 100) % 60) 
+                + ":" + (((int)this.Timer.MilliSeconds) % 100);
+            //formatting
+            if (((((int)this.Timer.MilliSeconds) / 100) % 60) < 10)
+            {
+                timeStr = ((((int)this.Timer.MilliSeconds) / 100) / 60) + ":0" + ((((int)this.Timer.MilliSeconds) / 100) % 60) 
+                    + ":" + (((int)this.Timer.MilliSeconds) % 100);
+            }
+            spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(300,50), Color.White);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

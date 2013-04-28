@@ -43,7 +43,7 @@ namespace PlanA
         public bool isHitConfirmed(int currentTime)
         {
             //first check for timing on either end of the buffer
-            if(((this.timeStart + TIMEBUFFER) <= currentTime) || ((this.timeStart - TIMEBUFFER) >= currentTime))
+            if(((this.timeStart + TIMEBUFFER) >= currentTime) || ((this.timeStart - TIMEBUFFER) <= currentTime))
             {
                 //if the button/chord is held down
                 if ((GamePad.GetState(PlayerIndex.One).IsButtonDown(this.padButtons[(int)button])) || (Keyboard.GetState().IsKeyDown(this.keyButtons[(int)button])))
