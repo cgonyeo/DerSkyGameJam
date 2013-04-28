@@ -54,9 +54,19 @@ namespace PlanA
         Texture2D darkGrey;
         //Range out to which the player can see notes
         public double vision = 150;
-
+        //font color
+        public Color fontColor;
         //font to draw shit to the screen
         public SpriteFont font;
+        //star power sound
+        public SoundEffect StarPowerSound;
+        //soundtrack
+        public SoundEffect soundtrack;
+        public Texture2D albumArt;
+        //stores images for the background crowd
+        public Texture2D[] backgroundImg = new Texture2D[7];
+        //list that handles drawing the crowd
+        public List<Vector3> backgroundCrowd;
 
         public Game1()
         {
@@ -78,6 +88,7 @@ namespace PlanA
             this.score = 0;
             this.starPowerScore = 0;
             this.InARow = 0;
+            this.fontColor = Color.Black;
             //initialize the list
             this.noteList = new List<Note>();
             this.fillSong();
@@ -179,6 +190,8 @@ namespace PlanA
             {
                 if(GamePad.GetState(PlayerIndex.One).Triggers.Right > 0.5f)
                 {
+                    //play a unqiue sound for starting star power
+                    this.StarPowerSound.CreateInstance().Play();
                     //multiple the score before adding it to the total
                     this.scoreTemp *= Game1.SCOREMULTIPLIER;
                     //wipe star power ability
@@ -216,6 +229,9 @@ namespace PlanA
             SoundHandler.Add(YellowSound);
             SoundHandler.Add(BlueSound);
             SoundHandler.Add(OrangeSound);
+            //sound for star power and soundtrack
+            this.StarPowerSound = Content.Load<SoundEffect>("Wee");
+            this.soundtrack = Content.Load<SoundEffect>("10 Every Breath You Take");
             //fill the sound instances
             for (int cntr = 0; cntr < SoundHandler.Count; cntr++)
             {
@@ -229,6 +245,24 @@ namespace PlanA
             noteAreaBg = Content.Load<Texture2D>("noteAreaBg");
             logoSmall = Content.Load<Texture2D>("logoSmall");
             darkGrey = Content.Load<Texture2D>("darkGrey");
+            this.albumArt = Content.Load<Texture2D>("album_art");
+            //background / crowd system
+            this.backgroundCrowd = new List<Vector3>();
+            /*
+            this.backgroundImg[0] = Content.Load<Texture2D>("");
+            this.backgroundImg[1] = Content.Load<Texture2D>("");
+            this.backgroundImg[2] = Content.Load<Texture2D>("");
+            this.backgroundImg[3] = Content.Load<Texture2D>("");
+            this.backgroundImg[4] = Content.Load<Texture2D>("");
+            this.backgroundImg[5] = Content.Load<Texture2D>("");
+            this.backgroundImg[6] = Content.Load<Texture2D>("");*/
+            //fill array with five inital textures; 1st two dimesions are the 
+            //x,y coordinates; z is really the index
+            Random ranNum = new Random();
+            for (int cntr = 0; cntr < 5; cntr++)
+            {
+                this.backgroundCrowd.Add(new Vector3(width + (cntr*10),ranNum.Next(1,5)*50,ranNum.Next(0,7)));
+            }
         }
 
         /// <summary>
@@ -248,8 +282,11 @@ namespace PlanA
         protected override void Update(GameTime gameTime)
         {
             //start the timer once, ver first thing once the looping begins
-            if(this.Timer.IsTiming == false)
+            if (this.Timer.IsTiming == false)
+            {
                 this.Timer.Start();
+                this.soundtrack.CreateInstance().Play();
+            }
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -271,9 +308,15 @@ namespace PlanA
         {
             //checks if starpower is active
             if ((this.Timer.MilliSeconds - this.Timer.TimeStamp1 <= Game1.STARPOWERTHRESH) && (this.Timer.TimeStamp1 != 0))
+            {
                 GraphicsDevice.Clear(new Color(44, 117, 255));
+                fontColor = Color.White;
+            }
             else
+            {
                 GraphicsDevice.Clear(Color.WhiteSmoke);
+                fontColor = Color.Black;
+            }
             spriteBatch.Begin();
             //draw the time to the screen
             //this took me longer than it should have
@@ -285,12 +328,25 @@ namespace PlanA
                 timeStr = ((((int)this.Timer.MilliSeconds) / 100) / 60) + ":0" + ((((int)this.Timer.MilliSeconds) / 100) % 60) 
                     + "." + (((int)this.Timer.MilliSeconds) % 100);
             }
-            spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(width - 150, 25), Color.Black);
-            spriteBatch.DrawString(font, "Score: " + this.score, new Vector2(width - 150, 50), Color.Black);
+            spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(width - 150, 25), fontColor);
+            spriteBatch.DrawString(font, "Score: " + this.score, new Vector2(width - 150, 50), fontColor);
+            //draw that star power notification
+            if ((this.Timer.MilliSeconds - this.Timer.TimeStamp1 <= Game1.STARPOWERTHRESH) && (this.Timer.TimeStamp1 != 0))
+                spriteBatch.DrawString(font, "HIPSTER POWER!", new Vector2(width / 4, height - 50), fontColor);
             //album data 
-            spriteBatch.DrawString(font, "Andrew & the Gerards", new Vector2(width - 500, height-75), Color.Black);
-            spriteBatch.DrawString(font, "Every Breath You Take++", new Vector2(width - 500, height-50), Color.Black);
-            spriteBatch.DrawString(font, "CSH Records Limited", new Vector2(width - 500, height-25), Color.Black);
+            spriteBatch.DrawString(font, "Andrew & the Gerards", new Vector2(width - 500, height - 75), fontColor);
+            spriteBatch.DrawString(font, "Every Breath You Take++", new Vector2(width - 500, height - 50), fontColor);
+            spriteBatch.DrawString(font, "CSH Records Limited", new Vector2(width - 500, height - 25), fontColor);
+            spriteBatch.Draw(this.albumArt, new Rectangle(width-200,height-100, 100, 100), Color.White);
+            //draw the background images
+            foreach (Vector3 vector in this.backgroundCrowd)
+            {
+                spriteBatch.Draw(this.backgroundImg[(int)vector.Z], new Vector2(vector.X, vector.Y), Color.White);
+            }
+            //remove anything that is now off the screen and then add new shit
+            for (int cntr = 0; cntr < this.backgroundCrowd.Count; cntr++)
+            {
+            }
             //Draw the background
             spriteBatch.Draw(noteAreaBg, new Rectangle(0, (int)(height * 0.3), width, (int)(height * 0.55)), Color.White);
             spriteBatch.Draw(logoSmall, new Rectangle(20, 20, 286 / 2, 207 / 2), Color.White);
