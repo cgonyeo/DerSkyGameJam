@@ -32,10 +32,19 @@ namespace PlanA
         public int score;
         //Multiplier and star power shit
         public const int SCOREMULTIPLIER = 2;
-        //how many notes in a row to hit until star power?
-        public const int CHARGEDSTARPOWER = 10;
+        //how many points to hit until star power
+        public const int CHARGEDSTARPOWER = 200;
         //charge star power
         public int starPowerScore;
+        //how many in a row; adds to star power
+        public int InARow;
+        //points / how many in a row to get to increase star power scoring
+        public const int MINSTARPOWER = 10;
+        //score between game loops
+        public int scoreTemp;
+        //time threshold on the star power
+        public const int STARPOWERTHRESH = 500;
+
         //font to draw shit to the screen
         public SpriteFont font;
 
@@ -55,6 +64,8 @@ namespace PlanA
         {
             //set the initial score to 0
             this.score = 0;
+            this.starPowerScore = 0;
+            this.InARow = 0;
             //initialize the list
             this.noteList = new List<Note>();
             this.fillSong();
@@ -83,6 +94,7 @@ namespace PlanA
         public void checkNotes()
         {
             List<int> indexes = new List<int>();
+            this.scoreTemp = 0;
             //loop over everything; should work for chords
             for (int cntr = 0; cntr < this.noteList.Count; cntr++)
             {
@@ -90,13 +102,22 @@ namespace PlanA
                 {
                     //play the mapped sound
                     this.SoundHandlerInst[(int)this.noteList[cntr].button].Play();
-                    this.score += this.noteList[cntr].points;
+                    this.scoreTemp += this.noteList[cntr].points;
                     indexes.Add(cntr);
+                    //increment how many you've hit in a row
+                    this.InARow++;
+                    //check if you should get more star power
+                    if (this.InARow == Game1.MINSTARPOWER)
+                    {
+                        this.starPowerScore += Game1.MINSTARPOWER;
+                        this.InARow = 0;
+                    }
                 }
-                //tag to remove once time has passed by
+                //tag to remove once time has passed by..indicates a miss
                 else if ((this.noteList[cntr].timeStart + Note.TIMEBUFFER) < (int)this.Timer.MilliSeconds)
                 {
                     indexes.Add(cntr);
+                    this.InARow = 0;
                 }
                 //indexes.Add(cntr);
                 //Console.WriteLine(cntr);
@@ -127,6 +148,30 @@ namespace PlanA
                 }
                 //change volume based on the d-pad input changes/changes to volume
                 SoundHandlerInst[cntr].Volume = this.GuitarVolume;
+            }
+        }
+        /// <summary>
+        /// Check guitar input for tilt and add score multiplier
+        /// </summary>
+        public void StarPower()
+        {
+            //checks time stamp on the star power multiplier
+            if ((this.Timer.MilliSeconds - this.Timer.TimeStamp1 <= Game1.STARPOWERTHRESH) && (this.Timer.TimeStamp1 != 0))
+                this.scoreTemp *= Game1.SCOREMULTIPLIER;
+            //or just wipes the time stamp
+            else
+                this.Timer.TimeStamp1 = 0;
+            if (this.starPowerScore >= Game1.CHARGEDSTARPOWER)
+            {
+                if(GamePad.GetState(PlayerIndex.One).Triggers.Right > 0.5f)
+                {
+                    //multiple the score before adding it to the total
+                    this.scoreTemp *= Game1.SCOREMULTIPLIER;
+                    //wipe star power ability
+                    //we might want a timer on this...
+                    this.starPowerScore = 0;
+                    this.Timer.SetTimeStamp1();
+                }
             }
         }
 
@@ -193,6 +238,8 @@ namespace PlanA
             this.checkNotes();
             //update all sounds based on whammy bar info
             this.whammyBar();
+            //add temp score to the total score
+            this.score += this.scoreTemp;
             base.Update(gameTime);
         }
 
