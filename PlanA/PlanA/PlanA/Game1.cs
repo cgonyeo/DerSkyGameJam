@@ -269,7 +269,11 @@ namespace PlanA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            //checks if starpower is active
+            if ((this.Timer.MilliSeconds - this.Timer.TimeStamp1 <= Game1.STARPOWERTHRESH) && (this.Timer.TimeStamp1 != 0))
+                GraphicsDevice.Clear(new Color(44, 117, 255));
+            else
+                GraphicsDevice.Clear(Color.WhiteSmoke);
             spriteBatch.Begin();
             //draw the time to the screen
             //this took me longer than it should have
@@ -282,14 +286,52 @@ namespace PlanA
                     + "." + (((int)this.Timer.MilliSeconds) % 100);
             }
             spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(width - 150, 25), Color.Black);
-
+            spriteBatch.DrawString(font, "Score: " + this.score, new Vector2(width - 150, 50), Color.Black);
+            //album data 
+            spriteBatch.DrawString(font, "Andrew & the Gerards", new Vector2(width - 500, height-75), Color.Black);
+            spriteBatch.DrawString(font, "Every Breath You Take++", new Vector2(width - 500, height-50), Color.Black);
+            spriteBatch.DrawString(font, "CSH Records Limited", new Vector2(width - 500, height-25), Color.Black);
             //Draw the background
             spriteBatch.Draw(noteAreaBg, new Rectangle(0, (int)(height * 0.3), width, (int)(height * 0.55)), Color.White);
             spriteBatch.Draw(logoSmall, new Rectangle(20, 20, 286 / 2, 207 / 2), Color.White);
             spriteBatch.Draw(darkGrey, new Rectangle(50, (int)(height * 0.3), 10, (int)(height * 0.55)), Color.White);
             for(double i = 0.3; i <= 0.7; i += 0.1)
                 spriteBatch.Draw(darkGrey, new Rectangle(0, (int)(height * i) + 45, width, 10), Color.White);
-
+            //draw buttons when they are held down
+            for (int cntr = 0; cntr < 5; cntr++)
+            {
+                //if the button is held down
+                if (Note.isBtnDown(cntr) == true)
+                {
+                    //draw that shit
+                    Color noteColor = Color.White;
+                    double offset = 0.2;
+                    switch (cntr)
+                    {
+                        case (int)Note.BUTTONS.BLUE:
+                            noteColor = Color.Blue;
+                            offset = 0.6;
+                            break;
+                        case (int)Note.BUTTONS.GREEEN:
+                            noteColor = Color.Green;
+                            offset = 0.3;
+                            break;
+                        case (int)Note.BUTTONS.ORANGE:
+                            noteColor = Color.Orange;
+                            offset = 0.7;
+                            break;
+                        case (int)Note.BUTTONS.RED:
+                            noteColor = Color.Red;
+                            offset = 0.4;
+                            break;
+                        case (int)Note.BUTTONS.YELLOW:
+                            noteColor = Color.Yellow;
+                            offset = 0.5;
+                            break;
+                    }
+                    spriteBatch.Draw(noteImg, new Rectangle(0, (int)(height * offset), 100, 100), noteColor);
+                }
+            }
             //Draw the notes
             foreach (Note n in noteList)
             {

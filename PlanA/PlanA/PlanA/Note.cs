@@ -24,8 +24,10 @@ namespace PlanA
         //how many points this thing is worth
         public int points;
 
-        public Buttons[] padButtons;
-        public Keys[] keyButtons;
+        public static Buttons[] padButtons = {Buttons.A,Buttons.B, Buttons.Y, Buttons.X, Buttons.LeftShoulder,
+                                                 Buttons.DPadUp,Buttons.DPadDown,Buttons.RightStick};
+        public static Keys[] keyButtons = {Keys.A,Keys.S,Keys.D, Keys.F, Keys.G, 
+                                              Keys.Space, Keys.Space,Keys.LeftShift};
 
         public Note(int timeStart, BUTTONS button)
         {
@@ -33,7 +35,7 @@ namespace PlanA
             this.button = button;
             //point value based on button enumeration...CAUSE FUCK YOUR SYSTEM THAT"S WHY
             this.points = (int)button * 5;
-            this.mapButtons();
+            //this.mapButtons();
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace PlanA
             if(((this.timeStart + TIMEBUFFER) >= currentTime) && ((this.timeStart - TIMEBUFFER) <= currentTime))
             {
                 //if the button/chord is held down
-                if ((GamePad.GetState(PlayerIndex.One).IsButtonDown(this.padButtons[(int)button])) || (Keyboard.GetState().IsKeyDown(this.keyButtons[(int)button])))
+                if ((GamePad.GetState(PlayerIndex.One).IsButtonDown(padButtons[(int)button])) || (Keyboard.GetState().IsKeyDown(keyButtons[(int)button])))
                 {
                     //then check for strumming
                     if(isStrum() == true)
@@ -58,10 +60,24 @@ namespace PlanA
             return(false);
         }
         /// <summary>
+        /// Same idea, but only returns whether or not the button is being held down
+        /// </summary>
+        /// <returns></returns>
+        public static bool isBtnDown(int buttonID)
+        {
+            //if the button/chord is held down
+            if ((GamePad.GetState(PlayerIndex.One).IsButtonDown(padButtons[buttonID])) || (Keyboard.GetState().IsKeyDown(keyButtons[buttonID])))
+            {
+                return (true);
+            }
+            return (false);
+        }
+
+        /// <summary>
         /// Determine if there was a strum
         /// </summary>
         /// <returns></returns>
-        public bool isStrum()
+        public static bool isStrum()
         {
             if((GamePad.GetState(PlayerIndex.One).IsButtonDown(padButtons[5])) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(padButtons[6])))
                 return(true);
@@ -72,6 +88,7 @@ namespace PlanA
         /// <summary>
         /// Method that maps buttons
         /// </summary>
+        /*
         public void mapButtons()
         {
             this.padButtons = new Buttons[8];
@@ -100,5 +117,6 @@ namespace PlanA
             this.padButtons[7] = Buttons.RightStick;
             this.keyButtons[7] = Keys.LeftShift;
         }
+        */
     }
 }
