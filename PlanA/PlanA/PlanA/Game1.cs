@@ -44,6 +44,16 @@ namespace PlanA
         public int scoreTemp;
         //time threshold on the star power
         public const int STARPOWERTHRESH = 500;
+        //width and height of our screen
+        public int width = 1200;
+        public int height = 650;
+        //Texture to hold our UI stuffs
+        Texture2D noteImg;
+        Texture2D noteAreaBg;
+        Texture2D logoSmall;
+        Texture2D darkGrey;
+        //Range out to which the player can see notes
+        public double vision = 150;
 
         //font to draw shit to the screen
         public SpriteFont font;
@@ -51,6 +61,8 @@ namespace PlanA
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferHeight = height;
+            graphics.PreferredBackBufferWidth = width;
             Content.RootDirectory = "Content";
         }
 
@@ -85,7 +97,7 @@ namespace PlanA
             this.noteList.Add(new Note(300, Note.BUTTONS.YELLOW));
             this.noteList.Add(new Note(400, Note.BUTTONS.BLUE));
             this.noteList.Add(new Note(500, Note.BUTTONS.ORANGE));
-            this.noteList.Add(new Note(600, Note.BUTTONS.GREEEN));
+            this.noteList.Add(new Note(300, Note.BUTTONS.GREEEN));
         }
 
         /// <summary>
@@ -124,10 +136,12 @@ namespace PlanA
             }
             //at the end of checking, remove any used Notes, shorten the shit
             //and prevent duplicate sounds from playing because OH GOD OH GOD
-            foreach (int sacredIndex in indexes)
+            //foreach (int sacredIndex in indexes)
+            for(int i = indexes.Count - 1; i >= 0; i--)
             {
                 //High Charity has fallen! Wort wort wort!
                 //Console.WriteLine("Sacred Index: "+sacredIndex);
+                int sacredIndex = indexes.ElementAt(i);
                 this.noteList.RemoveAt(sacredIndex);
             }
             //Console.WriteLine(this.Timer.MilliSeconds);
@@ -209,6 +223,12 @@ namespace PlanA
             }
             //intial volume is the volume value of the first sound file
             this.GuitarVolume = this.SoundHandlerInst[0].Volume;
+
+            //Load our note image
+            noteImg = Content.Load<Texture2D>("circle");
+            noteAreaBg = Content.Load<Texture2D>("noteAreaBg");
+            logoSmall = Content.Load<Texture2D>("logoSmall");
+            darkGrey = Content.Load<Texture2D>("darkGrey");
         }
 
         /// <summary>
@@ -249,7 +269,7 @@ namespace PlanA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
             //draw the time to the screen
             //this took me longer than it should have
@@ -259,9 +279,50 @@ namespace PlanA
             if (((((int)this.Timer.MilliSeconds) / 100) % 60) < 10)
             {
                 timeStr = ((((int)this.Timer.MilliSeconds) / 100) / 60) + ":0" + ((((int)this.Timer.MilliSeconds) / 100) % 60) 
-                    + ":" + (((int)this.Timer.MilliSeconds) % 100);
+                    + "." + (((int)this.Timer.MilliSeconds) % 100);
             }
-            spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(300,50), Color.White);
+            spriteBatch.DrawString(font, "Time: " + timeStr, new Vector2(width - 150, 25), Color.Black);
+
+            //Draw the background
+            spriteBatch.Draw(noteAreaBg, new Rectangle(0, (int)(height * 0.3), width, (int)(height * 0.55)), Color.White);
+            spriteBatch.Draw(logoSmall, new Rectangle(20, 20, 286 / 2, 207 / 2), Color.White);
+            spriteBatch.Draw(darkGrey, new Rectangle(50, (int)(height * 0.3), 10, (int)(height * 0.55)), Color.White);
+            for(double i = 0.3; i <= 0.7; i += 0.1)
+                spriteBatch.Draw(darkGrey, new Rectangle(0, (int)(height * i) + 45, width, 10), Color.White);
+
+            //Draw the notes
+            foreach (Note n in noteList)
+            {
+                if (n.timeStart - vision < Timer.MilliSeconds && n.timeStart + 100 > Timer.MilliSeconds)
+                {
+                    Color noteColor = Color.White;
+                    double offset = 0.2;
+                    switch (n.button)
+                    {
+                        case Note.BUTTONS.BLUE:
+                            noteColor = Color.Blue;
+                            offset = 0.6;
+                            break;
+                        case Note.BUTTONS.GREEEN:
+                            noteColor = Color.Green;
+                            offset = 0.3;
+                            break;
+                        case Note.BUTTONS.ORANGE:
+                            noteColor = Color.Orange;
+                            offset = 0.7;
+                            break;
+                        case Note.BUTTONS.RED:
+                            noteColor = Color.Red;
+                            offset = 0.4;
+                            break;
+                        case Note.BUTTONS.YELLOW:
+                            noteColor = Color.Yellow;
+                            offset = 0.5;
+                            break;
+                    }
+                    spriteBatch.Draw(noteImg, new Rectangle((int)(width * (n.timeStart - Timer.MilliSeconds) / vision), (int)(height * offset), 100, 100), noteColor);
+                }
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
